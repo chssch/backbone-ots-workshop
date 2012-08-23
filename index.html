@@ -31,26 +31,218 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to the Introduction for Backbone.</h3>
+        <h3>Welcome to the Introduction for Backbone, we're glad to have you.</h3>
 
-<p>Material for this workshop is copied from different sources.</p>
+<p>We will build a single page app with backbone.js using a REST API. By using the backbone.js concepts of models, collections, views/sub-views, templating and routing you will learn a modern approach of designing javascript applications for the browser.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>We will develop a simple bookmarking service. You can save a bookmarks (a bookmark has an descriptive name and a URL) in different folders.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>We only want to develop the frontend for this. Therefore we already prepared the backend. Just install, if not done already, this ruby based API on you local machine:</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p><a href="https://github.com/endor/otscamp-backbone-backend">https://github.com/endor/otscamp-backbone-backend</a></p>
+
+<p>Let us know, if you need help with the installation.</p>
+
+<h2>Let's start</h2>
+
+<h3>REST recap</h3>
+
+<blockquote>
+<p>REST stands for Representational State Transfer. (It is sometimes spelled "ReST".) It relies on a stateless, client-server, cacheable communications protocol -- and in virtually all cases, the HTTP protocol is used.</p>
+
+<p>RESTful applications use HTTP requests to post data (create and/or update), read data (e.g., make queries), and delete data. Thus, REST uses HTTP for all four CRUD (Create/Read/Update/Delete) operations.
+<a href="http://rest.elkstein.org/">http://rest.elkstein.org/</a></p>
+</blockquote>
 
 <h3>Models</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<blockquote>
+<p>Models are the heart of any JavaScript application, containing the interactive data as well as a large part of the logic surrounding it: conversions, validations, computed properties, and access control. You extend Backbone.Model with your domain-specific methods, and Model provides a basic set of functionality for managing changes.</p>
+</blockquote>
 
-<h3>Events I</h3>
+<div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm">* The bookmark model represents one bookmark</span>
+<span class="cm">*</span>
+<span class="cm">*/</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">Bookmark</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+    <span class="nx">urlRoot</span><span class="o">:</span> <span class="nx">config</span><span class="p">.</span><span class="nx">BASEURL</span> <span class="o">+</span> <span class="s2">"/bookmarks"</span><span class="p">,</span>
+
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Bookmark initialized"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">});</span>
+</pre></div>
+
+<p>To start put this code into the model section in your public/index.html of your ruby project.</p>
+
+<p>Open now the Web Inspector/Console of your Chrome browser.</p>
+
+<blockquote>
+<p>new Model([attributes])</p>
+
+<p>When creating an instance of a model, you can pass in the initial values of theattributes, which will be set on the model. If you define an initialize function, it will be invoked when the model is created.</p>
+</blockquote>
+
+<p>Type:</p>
+
+<pre><code>var bookmark = new Bookmark({url:”http://www.opentechschool.org/”, name: “OpenTechSchool”});
+</code></pre>
+
+<p>We created a new Bookmark object.</p>
+
+<p>To inspect the object just type into the console:</p>
+
+<pre><code>bookmark
+</code></pre>
+
+<p>Now you can find in <code>attributes</code> of the object the data.</p>
+
+<p>Let's do some operations on the data.</p>
+
+<pre><code>bookmark.get(‘name’);
+bookmark.set(‘name’, ‘OTS’);
+bookmark.get(‘name’);
+</code></pre>
+
+<p>First we get the attribute name. with <code>set</code> you can edit an attribute.
+We should always to use this functions to change data.</p>
+
+<pre><code>bookmark.toJSON();
+</code></pre>
+
+<p>returns a JSON representation of all attributes.</p>
+
+<p>Now we will sync our locally created data to the server. Watch the requests in the "Network" tab of your Chrome Web Inspector.</p>
+
+<pre><code>bookmark.save();
+</code></pre>
+
+<p>In the "Header" tab you can see, that Backbone automatically wraps the data into a JSON formatted string and sends a POST request to the <code>/bookmark</code> endpoint of our API. In the "Response" the API returns a JSON string of the object that now has an <code>id</code>.</p>
+
+<p>Type</p>
+
+<pre><code>bookmark.id
+</code></pre>
+
+<p>The bookmark is now synchronized with the server.
+If you open a new tab an type</p>
+
+<p>http://localhost:3000/bookmarks</p>
+
+<p>You get a list of all bookmarks stored by the backend.</p>
+
+<p>If we change our model data and execute a <code>save()</code> again, we can see that Backbone is now using a PUT request to update the data on the server.</p>
+
+<h2>2. Simple Views</h2>
+
+<blockquote>
+<p>Backbone views are almost more convention than they are code — they don't determine anything about your HTML or CSS for you, and can be used with any JavaScript templating library. The general idea is to organize your interface into logical views, backed by models, each of which can be updated independently when the model changes, without having to redraw the page. Instead of digging into a JSON object, looking up an element in the DOM, and updating the HTML by hand, you can bind your view's render function to the model's "change" event — and now everywhere that model data is displayed in the UI, it is always immediately up to date.</p>
+</blockquote>
+
+<p>We want to create a simple view, add this code to your file.</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">BookmarkView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"BookmarkView initialized"</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Model:"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">);</span>
+
+        <span class="c1">// The $el element is automatically a cached jQuery element </span>
+        <span class="c1">// to your DOM element that you passed on view creation</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"DOM Element:"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">);</span>
+    <span class="p">},</span>
+
+    <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">'&lt;b&gt;'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span> <span class="o">+</span> <span class="s1">':&lt;/b&gt; '</span> 
+                            <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'url'</span><span class="p">));</span>
+        <span class="c1">// We always return the view itself after rendering</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>We pass the model, that should be presented by the view, and the DOM Element as options. These options are directly attached to the view:</p>
+
+<pre><code>var bookmarkView = new BookmarkView({model: bookmark, el: "#oneBookmark"});
+</code></pre>
+
+<p>Now we can execute the <code>render</code> function:</p>
+
+<pre><code>bookmarkView.render();
+</code></pre>
+
+<p>The View gets now rendered into the DOM element with the id <code>oneBookmark</code>.</p>
+
+<h4>Using Templates</h4>
+
+<p>In the View above we're mixing presentation code with logic code. To seperate these, we use templates.
+Underscore.js, a library that is used by Backbone.js comes with its own template system. We want to use that to decouple the presentational from the functional part. For more informations see also: <a href="http://underscorejs.org/#template">http://underscorejs.org/#template</a></p>
+
+<p>We're using the <code>&lt;script&gt;</code> tag to manage our templates. We ass above out JavaScript code in the file:</p>
+
+<pre><code>&lt;script id="templateBookmark" type="text/html"&gt;
+    &lt;li class="bookmarkEntry"&gt;
+        &lt;b&gt;&lt;%= name %&gt;&lt;/b&gt; &lt;a href="&lt;%= url %&gt;"&gt;&lt;%= url %&gt;&lt;/a&gt;
+    &lt;/li&gt;   
+&lt;/script&gt;
+</code></pre>
+
+<p>We can use the template with changing out view into:</p>
+
+<pre><code>window.BookmarkView = Backbone.View.extend({
+
+    // Load content of #templateBookmark and prepare template
+    // The underscore.js _.template funtion takes a string and 
+    // returns a compiled template function
+    compiledTemplate: _.template($('#templateBookmark').html()),
+
+    // Constructor function of BookmarkView
+    initialize: function() {
+        console.log("BookmarkView initialized");
+        this.model.on('change', this.render, this);
+    },
+
+    render: function() {
+        // Render template with model data
+        var rendered = this.compiledTemplate( this.model.toJSON() ); 
+
+        // Set as inner html of view element
+        this.$el.html(rendered);
+
+        return this;
+    }
+});
+</code></pre>
+
+<p>Reload your file and create a <code>Bookmark</code>. Pass the bookmark object and a DOM element to a created <code>BookmarkView</code> an render.</p>
+
+<h4>Events</h4>
+
+<p>In the view initialization we registered on event:
+this.model.on('change', this.render, this);</p>
+
+<p>Backbone fires different built-in events on particular actions (<a href="http://backbonejs.org/#FAQ-events">http://backbonejs.org/#FAQ-events</a>). </p>
+
+<p>This is what happens here: On a change of the model attached to the view, execute the <code>render</code> function of the view. We also have to pass a context <code>this</code>, so that we can use the current view in the <code>render</code> function.</p>
+
+<p>We can test this function by changing the model data in the console:</p>
+
+<p><code>bookmark.set(‘name’, ‘OTS’);</code></p>
+
+<p>You'll see that the content is updated in the page.</p>
+
+<h3>Collections</h3>
+
+<blockquote>
+<p>Collections are ordered sets of models. You can bind "change" events to be notified when any model in the collection has been modified, listen for "add" and "remove" events, fetch the collection from the server.</p>
+</blockquote>
+
+<p>We are going to implement a collection of bookmarks:</p>
+
+<pre><code>
+</code></pre>
 
 <h3>Authors and Contributors</h3>
 
