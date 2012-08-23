@@ -41,9 +41,7 @@
 
 <p><a href="https://github.com/endor/otscamp-backbone-backend">https://github.com/endor/otscamp-backbone-backend</a></p>
 
-<p>Let us know, if you need help with the installation.</p>
-
-<h2>Let's start</h2>
+<p>If you need help with the installation, just let us know.</p>
 
 <h3>REST recap</h3>
 
@@ -54,7 +52,11 @@
 <a href="http://rest.elkstein.org/">http://rest.elkstein.org/</a></p>
 </blockquote>
 
-<h3>Models</h3>
+<h1>Let's start programming</h1>
+
+<p>Open the index.html of the public directory in your editor. You find a code skeleton for your project. To make it simple we will put every piece of code in this file. Open http://localhost:9292/ in your Chrome browser.</p>
+
+<h2>1. Models</h2>
 
 <blockquote>
 <p>Models are the heart of any JavaScript application, containing the interactive data as well as a large part of the logic surrounding it: conversions, validations, computed properties, and access control. You extend Backbone.Model with your domain-specific methods, and Model provides a basic set of functionality for managing changes.</p>
@@ -75,14 +77,15 @@
 <span class="p">});</span>
 </pre></div>
 
-<p>To start put this code into the model section in your public/index.html of your ruby project.</p>
+<p>To start we already put this code into the model section of the index.html file. This is a basic model, that is already quite powerful because of the functionality added by the Backbone framework.</p>
 
-<p>Open now the Web Inspector/Console of your Chrome browser.</p>
+<p>Open now the Web Inspector/Console of your Chrome browser (press Ctrl+Shift+J on Linux or Windows, press
+Command+Option+J on OSX).</p>
 
 <blockquote>
 <p>new Model([attributes])</p>
 
-<p>When creating an instance of a model, you can pass in the initial values of theattributes, which will be set on the model. If you define an initialize function, it will be invoked when the model is created.</p>
+<p>When creating an instance of a model, you can pass in the initial values of the attributes, which will be set on the model. If you define an initialize function, it will be invoked when the model is created.</p>
 </blockquote>
 
 <p>Type:</p>
@@ -90,14 +93,14 @@
 <pre><code>var bookmark = new Bookmark({url:”http://www.opentechschool.org/”, name: “OpenTechSchool”});
 </code></pre>
 
-<p>We created a new Bookmark object.</p>
+<p>We created a new bookmark instance.</p>
 
 <p>To inspect the object just type into the console:</p>
 
 <pre><code>bookmark
 </code></pre>
 
-<p>Now you can find in <code>attributes</code> of the object the data.</p>
+<p>You can find the data in the variable <code>attributes</code> of the object.</p>
 
 <p>Let's do some operations on the data.</p>
 
@@ -106,22 +109,20 @@ bookmark.set(‘name’, ‘OTS’);
 bookmark.get(‘name’);
 </code></pre>
 
-<p>First we get the attribute name. with <code>set</code> you can edit an attribute.
-We should always to use this functions to change data.</p>
+<p>First we get the value of the attribute <code>name</code>. You can edit an attribute with the <code>set</code> function.
+We should always use the <code>set</code> and <code>get</code> functions to change data.</p>
 
 <pre><code>bookmark.toJSON();
 </code></pre>
 
 <p>returns a JSON representation of all attributes.</p>
 
-<p>Now we will sync our locally created data to the server. Watch the requests in the "Network" tab of your Chrome Web Inspector.</p>
+<p>Now we will synchronize our locally created data to the server. Watch the requests in the "Network" tab of your Chrome Web Inspector.</p>
 
 <pre><code>bookmark.save();
 </code></pre>
 
 <p>In the "Header" tab you can see, that Backbone automatically wraps the data into a JSON formatted string and sends a POST request to the <code>/bookmark</code> endpoint of our API. In the "Response" the API returns a JSON string of the object that now has an <code>id</code>.</p>
-
-<p>Type</p>
 
 <pre><code>bookmark.id
 </code></pre>
@@ -129,9 +130,9 @@ We should always to use this functions to change data.</p>
 <p>The bookmark is now synchronized with the server.
 If you open a new tab an type</p>
 
-<p>http://localhost:3000/bookmarks</p>
+<p>http://localhost:9292/bookmarks (this is actually a GET request)</p>
 
-<p>You get a list of all bookmarks stored by the backend.</p>
+<p>You get a list (as JSON) of all bookmarks stored by the backend.</p>
 
 <p>If we change our model data and execute a <code>save()</code> again, we can see that Backbone is now using a PUT request to update the data on the server.</p>
 
@@ -163,7 +164,7 @@ If you open a new tab an type</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>We pass the model, that should be presented by the view, and the DOM Element as options. These options are directly attached to the view:</p>
+<p>We pass the model, that should be presented by the view, and the DOM element as options. These options are directly attached to the view:</p>
 
 <pre><code>var bookmarkView = new BookmarkView({model: bookmark, el: "#oneBookmark"});
 </code></pre>
@@ -177,10 +178,10 @@ If you open a new tab an type</p>
 
 <h4>Using Templates</h4>
 
-<p>In the View above we're mixing presentation code with logic code. To seperate these, we use templates.
+<p>In the View above we're mixing presentation code with logic code (not very nice). To separate these, we use templates.
 Underscore.js, a library that is used by Backbone.js comes with its own template system. We want to use that to decouple the presentational from the functional part. For more informations see also: <a href="http://underscorejs.org/#template">http://underscorejs.org/#template</a></p>
 
-<p>We're using the <code>&lt;script&gt;</code> tag to manage our templates. We ass above out JavaScript code in the file:</p>
+<p>We're using the <code>&lt;script&gt;</code> tag to manage our templates. We add to the "template section" of our file:</p>
 
 <pre><code>&lt;script id="templateBookmark" type="text/html"&gt;
     &lt;li class="bookmarkEntry"&gt;
@@ -189,51 +190,53 @@ Underscore.js, a library that is used by Backbone.js comes with its own template
 &lt;/script&gt;
 </code></pre>
 
-<p>We can use the template with changing out view into:</p>
+<p>We use this template by changing our view into:</p>
 
-<pre><code>window.BookmarkView = Backbone.View.extend({
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">BookmarkView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
-    // Load content of #templateBookmark and prepare template
-    // The underscore.js _.template funtion takes a string and 
-    // returns a compiled template function
-    compiledTemplate: _.template($('#templateBookmark').html()),
+    <span class="c1">// Load content of #templateBookmark and prepare template</span>
+    <span class="c1">// The underscore.js _.template funtion takes a string and </span>
+    <span class="c1">// returns a compiled template function</span>
+    <span class="nx">compiledTemplate</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">'#templateBookmark'</span><span class="p">).</span><span class="nx">html</span><span class="p">()),</span>
 
-    // Constructor function of BookmarkView
-    initialize: function() {
-        console.log("BookmarkView initialized");
-        this.model.on('change', this.render, this);
-    },
+    <span class="c1">// Constructor function of BookmarkView</span>
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"BookmarkView initialized"</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'change'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="p">},</span>
 
-    render: function() {
-        // Render template with model data
-        var rendered = this.compiledTemplate( this.model.toJSON() ); 
+    <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Render template with model data</span>
+        <span class="kd">var</span> <span class="nx">rendered</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">compiledTemplate</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()</span> <span class="p">);</span> 
 
-        // Set as inner html of view element
-        this.$el.html(rendered);
+        <span class="c1">// Set as inner html of view element</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">rendered</span><span class="p">);</span>
 
-        return this;
-    }
-});
-</code></pre>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
 
-<p>Reload your file and create a <code>Bookmark</code>. Pass the bookmark object and a DOM element to a created <code>BookmarkView</code> an render.</p>
+<p>Reload your file and create a <code>Bookmark</code>. Pass the bookmark object and a DOM element to <code>BookmarkView</code> instance an render the view.</p>
 
-<h4>Events</h4>
+<h3>Events</h3>
 
-<p>In the view initialization we registered on event:
-this.model.on('change', this.render, this);</p>
+<p>In the view initialization we registered a event:</p>
+
+<p><code>this.model.on('change', this.render, this);</code></p>
 
 <p>Backbone fires different built-in events on particular actions (<a href="http://backbonejs.org/#FAQ-events">http://backbonejs.org/#FAQ-events</a>). </p>
 
-<p>This is what happens here: On a change of the model attached to the view, execute the <code>render</code> function of the view. We also have to pass a context <code>this</code>, so that we can use the current view in the <code>render</code> function.</p>
+<p>This is what happens here: On a change of the model attached to the view, Backbone executes the <code>render</code> function of the view. We also have to pass a context <code>this</code>, so that we can use the current view in the <code>render</code> function.</p>
 
 <p>We can test this function by changing the model data in the console:</p>
 
-<p><code>bookmark.set(‘name’, ‘OTS’);</code></p>
+<pre><code>bookmark.set(‘name’, ‘OTS’);
+</code></pre>
 
 <p>You'll see that the content is updated in the page.</p>
 
-<h3>Collections</h3>
+<h2>3. Collections</h2>
 
 <blockquote>
 <p>Collections are ordered sets of models. You can bind "change" events to be notified when any model in the collection has been modified, listen for "add" and "remove" events, fetch the collection from the server.</p>
@@ -241,10 +244,112 @@ this.model.on('change', this.render, this);</p>
 
 <p>We are going to implement a collection of bookmarks:</p>
 
-<pre><code>
+<div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm">* The BookmarkCollection represents a collection of bookmarks</span>
+<span class="cm">*</span>
+<span class="cm">*/</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">BookmarkCollection</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+
+    <span class="c1">// Set the url property on a collection to reference its location on the server. </span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">config</span><span class="p">.</span><span class="nx">BASEURL</span> <span class="o">+</span> <span class="s2">"/bookmarks"</span><span class="p">,</span>
+
+    <span class="c1">// Specify the model class that the collection contains</span>
+    <span class="nx">model</span><span class="o">:</span> <span class="nx">Bookmark</span><span class="p">,</span>
+
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"BookmarkCollection initialized"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Have a look into the Backbone tutorial <a href="http://backbonejs.org/#Collection">http://backbonejs.org/#Collection</a> and play with some collection operations in your JavaScript console. Create a collection and use then the <code>create</code> function to add bookmarks to the collection and to store them on the server. Try some operations and also watch what happening in the Network tab of you Web Inspector.</p>
+
+<h2>3. Collection views / Sub-Views</h2>
+
+<p>To display a collection of models, you can use a number of model-views as sub-views of your collection-view. Backbone doesn't regulate, how sub-views mechanics should be implemented. In our simple approach, we implement a parent-View (the <code>BookmarkCollectionView</code>) that renders all sub-views in its own render function.</p>
+
+<div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm">* The BookmarkCollectionView represents the user interface to list and manipulate </span>
+<span class="cm">* a collection of bookmarks</span>
+<span class="cm">*</span>
+<span class="cm">*/</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">BookmarkCollectionView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="c1">// Constructor function of BookmarkView</span>
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"BookmarkCollectionView initialized"</span><span class="p">);</span>
+        <span class="c1">// Re-render if a element is removed or the collection is synced with the server</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'remove'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'sync'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>    
+    <span class="p">},</span>
+
+    <span class="c1">// The render function renders the View into a given DOM element</span>
+    <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="c1">// Clear DOM element</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">empty</span><span class="p">();</span>
+
+        <span class="c1">// Create a subview for every collection element and render this suview</span>
+        <span class="c1">// Append this subview element to the parent view</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">bookmarkView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookmarkView</span><span class="p">({</span><span class="nx">model</span><span class="o">:</span> <span class="nx">model</span><span class="p">});</span>
+            <span class="nx">self</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">bookmarkView</span><span class="p">.</span><span class="nx">render</span><span class="p">().</span><span class="nx">el</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">},</span>
+
+    <span class="c1">// Define events</span>
+    <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
+        <span class="c1">// If .delete is clicked, execute the delete function of this view</span>
+        <span class="s1">'click .delete'</span><span class="o">:</span> <span class="s1">'delete'</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="k">delete</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>   
+        <span class="kd">var</span> <span class="nx">bookmark</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s1">'bookmark-id'</span><span class="p">));</span>  
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Delete bookmark"</span><span class="p">,</span> <span class="nx">bookmark</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">bookmark</span><span class="p">);</span>
+        <span class="nx">bookmark</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>In the bottom of the file you can bootstrap some objects to use. You should already have some bookmarks stored in the backend. So, just use fetch to request your bookmark.</p>
+
+<div class="highlight"><pre>
+  <span class="c1">// Create a collection </span>
+  <span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookmarkCollection</span><span class="p">();</span>
+  <span class="nx">collection</span><span class="p">.</span><span class="nx">fetch</span><span class="p">();</span>
+
+  <span class="c1">// Create a collectionView for a list of bookmarks</span>
+  <span class="kd">var</span> <span class="nx">bookmarkCollectionView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BookmarkCollectionView</span><span class="p">({</span><span class="nx">collection</span><span class="o">:</span> <span class="nx">collection</span><span class="p">,</span> <span class="nx">el</span><span class="o">:</span> <span class="s2">"#bookmarkList"</span><span class="p">});</span>
+  <span class="nx">bookmarkCollectionView</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span>
+
+</pre></div>
+
+<p>Change the first element of the collection:</p>
+
+<pre><code>collection.at(0).set('name', 'NewName')
 </code></pre>
 
-<h3>Authors and Contributors</h3>
+<p>The first element in the list of the web page should change now. The events bound to the model view before, are still working.</p>
+
+<h2>Extend our application</h2>
+
+<p>In the next steps you can implement the logic for the folders. Feel free to write some code by you own:</p>
+
+<ol>
+<li>Implement a <code>Folder</code> model for a folder</li>
+<li>Implement a <code>FolderCollectionView</code> that displays a list of all folder names. The view should contain a input element, where i can type a name and create a new folder.</li>
+<li>If I click on a folder, i should get displayed all bookmarks of that folder. </li>
+</ol><h2>More topics</h2>
+
+<p>If we still have time we can speak about:</p>
+
+<ol>
+<li>How to structure the application, how to divide it into several files</li>
+<li>How to test our code</li>
+<li>How to use other template frameworks</li>
+</ol><h3>Authors and Contributors</h3>
 
 <p>Frank ...
 Christoph Schwienheer, <a href="https://github.com/chssch" class="user-mention">@chssch</a></p>
